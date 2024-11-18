@@ -6,9 +6,11 @@ const canvasSize = view.setCanvasSize( {width : view.MAPSET.CANVAS_WIDTH, height
 // Функция запускает прослушивание событий
 const startEventListeners = function () {
   view.elements.body.addEventListener('keyup', function (e) {
-    view.moveBlock(e);
+    // Указываем тип контроллера: keybord или arrows
+    view.moveBlock(e, 'keyboard');
   });
 }
+
 // Ф-ция запускает tick , создаётся цикл
 const start = function (tick, map) {
   const wrappedTick = function (timestamp) {

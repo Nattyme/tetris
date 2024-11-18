@@ -165,24 +165,43 @@ const tick = function (timestamp, map) {
   // requestAnimationFrame(tick);
 }
 
-// Ф-ция позволяет перемещать блок клваишам WASD
-const moveBlock = function (e) {
-  if (e.code === 'KeyA') {
+// Ф-ция позволяет перемещать блок, принимает событие и  тип контроллера
+const moveBlock = function (e, controlType) {
+  
+  // Объекты кнопок для разных способов управления
+  const moveTo = {
+    keyboard : {
+      left : 'KeyA',
+      top : 'KeyW',
+      right : 'KeyD',
+      bottom : 'KeyS'
+    },
+
+    arrows :  {
+      left : 'ArrowLeft',
+      top : 'ArrowUp',
+      right : 'ArrowRight',
+      bottom : 'ArrowDown'
+    }
+  };
+
+  if (e.code === moveTo[controlType].left) {
     MAPSET.block.x = MAPSET.block.x - 1;
   }
 
-  if (e.code === 'KeyD') {
+  if (e.code === moveTo[controlType].right) {
     MAPSET.block.x = MAPSET.block.x + 1;
   }
 
-  if (e.code === 'KeyW') {
+  if (e.code === moveTo[controlType].top) {
     MAPSET.block.y = MAPSET.block.y - 1;
   }
 
-  if (e.code === 'KeyS') {
+  if (e.code === moveTo[controlType].bottom) {
     MAPSET.block.y = MAPSET.block.y + 1;
   }
 }
+
 
 
 
