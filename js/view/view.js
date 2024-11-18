@@ -1,11 +1,11 @@
 const MAPSET = {
-  CANVAS_WIDTH : 500,
-  CANVAS_HEIGHT : 1000,
+  CANVAS_WIDTH : 375,
+  CANVAS_HEIGHT : 750,
   CANVAS_BACKGROUND : '#fff',
   ROW_NUMBERS : 20,
   COLUMNS_NUMBERS : 10,
   PADDING : 2,
-  block : getBlock(1, 'black', 5, 0),
+  block : getBlock(1),
   get fieldWidth () {
     return this.CANVAS_WIDTH / this.COLUMNS_NUMBERS; // fieldWidth
   },
@@ -33,6 +33,10 @@ const canvas = {
   },
 }
 
+const elements = {
+  body : document.body
+}
+
 // Ф-ция устанавливает размеры canvas
 const setCanvasSize = function (size) {
   canvas.width = size.width;
@@ -45,8 +49,13 @@ const setCanvasSize = function (size) {
 // Ф-ция очищает поле
 const clearCanvas = function () {
   const { CANVAS_BACKGROUND, CANVAS_WIDTH, CANVAS_HEIGHT } = MAPSET;
+
   canvas.context.fillStyle = CANVAS_BACKGROUND;
-  canvas.context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  canvas.context.strokeStyle = 'black';
+
+  canvas.context.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  canvas.context.fill();
+  canvas.context.stroke();
 }
 
 // Ф-ция будет отрисовывать состояние map, всё что в неё есть
@@ -117,15 +126,10 @@ const getMap = function () {
 }
 
 // Ф-ция получает 4 аргумента: тип блока. цвет, координаты
-function getBlock (type, color, x, y) {
+function getBlock (type, color = 'black', x = 4, y = 0) {
 
   // Создаём блок
-  const block = {
-    type : type,
-    x : x,
-    y : y,
-    color : color
-  }
+  const block = { type, x, y, color }
 
   //
   block.getIncludedParts = function () {
@@ -153,5 +157,33 @@ function getBlock (type, color, x, y) {
   return block;
 }
 
+// Ф-ция непрерывно совершает действия 
+const tick = function (timestamp, map) {
+  clearCanvas(); 
+  drawBlock(); // Рисуем блок
+  drawState(map)
+  // requestAnimationFrame(tick);
+}
 
-export { MAPSET, canvas, clearCanvas, drawField, drawBlock, getMap, drawState, setCanvasSize, getBlock };
+// Ф-ция позволяет перемещать блок клваишам WASD
+const moveBlock = function (e) {
+  if (e.code === 'KeyA') {
+    MAPSET.block.x = MAPSET.block.x - 1;
+  }
+
+  if (e.code === 'KeyD') {
+    MAPSET.block.x = MAPSET.block.x + 1;
+  }
+
+  if (e.code === 'KeyW') {
+    MAPSET.block.y = MAPSET.block.y - 1;
+  }
+
+  if (e.code === 'KeyS') {
+    MAPSET.block.y = MAPSET.block.y + 1;
+  }
+}
+
+
+
+export { MAPSET, canvas, elements, clearCanvas, drawField, drawBlock, getMap, drawState, setCanvasSize, getBlock, tick, moveBlock  };

@@ -2,23 +2,32 @@ import * as model from './model/model.js';
 import * as view from './view/view.js';
 
 // Настройка размеров canvas
-const canvasSize = view.setCanvasSize( {width : 500, height : 750} );
+const canvasSize = view.setCanvasSize( {width : view.MAPSET.CANVAS_WIDTH, height : view.MAPSET.CANVAS_HEIGHT} );
+// Функция запускает прослушивание событий
+const startEventListeners = function () {
+  view.elements.body.addEventListener('keyup', function (e) {
+    view.moveBlock(e);
+  });
+}
+// Ф-ция запускает tick , создаётся цикл
+const start = function (tick, map) {
+  const wrappedTick = function (timestamp) {
+    tick(timestamp, map); // Передаём timestamp и actions в tick
+    requestAnimationFrame(wrappedTick); // Рекурсивно вызываем wrappedTick
+  };
+  requestAnimationFrame(wrappedTick); // Запускаем первый кадр
+}
+
 
 // Получаем матрицу карты
 const map = view.getMap();
-// console.log(map[0][0] = 'green');
-// console.log(map[4][8] = 'red');
 
 // Отрисовываем состояние карты
 view.drawState(map);
-console.log(view.drawState(map));
 
-// Ф-ции, кот нужны выполнить на старте
-const startActions = [view.clearCanvas(), view.drawBlock(),  view.drawState()];
 // Запустим ф-цию старт, передаем ей на запуск ф-цию tick и массив действий
-model.start(model.tick, startActions);
+start(view.tick, map);
 
-// Передадим в tick функции на выполнение: очистить поле, отрисовать блок, отрисовать состояние
-model.tick(timestamp, startActions);
+// Слушаем события
+startEventListeners();
 
-console.log(block);
