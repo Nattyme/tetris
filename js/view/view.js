@@ -46,6 +46,7 @@ const setCanvasSize = function (size) {
   return size;
 }
 
+// Фн=-ция считает время 'падения' блока
 function getDowntime () {
   return 1000;
 }
@@ -95,7 +96,7 @@ const drawField = function (x, y, color) {
     fieldHeight - PADDING * 2);
 }
 
-// Ф-цтя рисует блок
+// Ф-ция рисует блок
 const drawBlock = function () {
   
   // Запрашиваем части блока, кот. нужно отобразить
@@ -127,6 +128,21 @@ const getMap = function () {
   }
 
   return map;
+}
+
+// Ф-ция превращает блок в структуру поля
+function saveBlock () {
+  // Получим части блока
+  const parts = MAPSET.block.getIncludedParts();
+  const map = MAPSET.map; 
+
+  // Обходим все части и записываем координаты и цвет каждой в map
+  for ( const part of parts ) {
+    const x = part.x;
+    const y = part.y;
+    const color = MAPSET.block.color;
+    map[y][x] = color;
+  }
 }
 
 // Ф-ция получает 4 аргумента: тип блока. цвет, координаты
@@ -184,12 +200,19 @@ const getField = function (x, y, map) {
 
 // Ф-ция непрерывно совершает действия 
 const tick = function (timestamp, map) {
-  if (timestamp >= MAPSET. downtime) {
+  // Если время с начала игры >= downtime 
+  if (timestamp >= MAPSET.downtime) {
+    // Созда1м копию и проверяем, можно ли сдвинуть
     const blockCopy = MAPSET.block.getCopy();
     blockCopy.y = blockCopy.y + 1;
 
+    // Если сдвинули - увелич время downtime
     if (canBlockExists( blockCopy, map ) ) {
       MAPSET.block = blockCopy;
+    } else {
+      // в иноч случае блок 'уперся', значит , превращаем его в статич. структуру
+      saveBlock(map);
+      MAPSET.block = getBlock(1);
     }
 
     MAPSET.downtime = timestamp + getDowntime();

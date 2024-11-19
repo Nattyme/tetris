@@ -20,9 +20,11 @@ const start = function (tick, map) {
   requestAnimationFrame(wrappedTick); // Запускаем первый кадр
 }
 
-
 // Получаем матрицу карты
-const map = view.getMap();
+view.MAPSET.map = view.getMap();
+
+// Сохраним в переменную
+const map = view.MAPSET.map;
 
 // Отрисовываем состояние карты
 view.drawState(map);
