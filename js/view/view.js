@@ -6,7 +6,7 @@ const MAPSET = {
   COLUMNS_NUMBERS : 10,
   PADDING : 2,
   downtime: getDowntime(),
-  block : getBlock(1),
+  block : getBlock(10),
   get fieldWidth () {
     return this.CANVAS_WIDTH / this.COLUMNS_NUMBERS; // fieldWidth
   },
@@ -153,6 +153,7 @@ function getBlock (type, color = 'black', x = 4, y = 0) {
 
   //
   block.getIncludedParts = function () {
+    // Тип фигуры - квадрат
     if (block.type === 1) {
       // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
       return [
@@ -162,11 +163,40 @@ function getBlock (type, color = 'black', x = 4, y = 0) {
         { x : block.x + 1, y : block.y + 1 },
       ]
     }
+
+    // Тип фигуры - гориз. линия
+    if (block.type === 10) {
+      // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
+      return [
+        { x : block.x, y : block.y },
+        { x : block.x - 1, y : block.y },
+        { x : block.x + 1, y : block.y },
+        { x : block.x + 2, y : block.y },
+      ]
+    }
+
+    // Тип фигуры - вертик линия
+    if (block.type === 11) {
+      // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
+      return [
+        { x : block.x, y : block.y },
+        { x : block.x, y : block.y + 1},
+        { x : block.x, y : block.y - 1},
+        { x : block.x, y : block.y - 2},
+      ]
+    }
   }
 
   block.getNextBlock = function () {
     if (block.type === 1) {
-      return getBlock ( block.type, block.color, block.x, block.y);
+      return getBlock ( 1, block.color, block.x, block.y);
+    }
+
+    if (block.type === 10) {
+      return getBlock ( 11, block.color, block.x, block.y);
+    }
+    if (block.type === 11) {
+      return getBlock ( 10, block.color, block.x, block.y);
     }
   }
 
@@ -212,6 +242,7 @@ const clearLines = function () {
       }
     }
 
+    // Если ряд заполнен
     if (isFullLine) {
       lines = lines + 1;
       for ( let t = y; t >= 1 ; t--) {
@@ -221,7 +252,7 @@ const clearLines = function () {
         }
       }
 
-      y = y + 1;
+      y = y + 1; // Увелич. на 1, чтобы повторно проверить ряд
     }
 
   }
@@ -270,21 +301,29 @@ const moveBlock = function (e, controlType, map) {
   // Объекты кнопок для разных способов управления
   const moveTo = {
     keyboard : {
+      turn : 'KeyW',
       left : 'KeyA',
-      top : 'KeyW',
       right : 'KeyD',
       bottom : 'KeyS'
     },
 
     arrows :  {
+      turn : 'ArrowUp',
       left : 'ArrowLeft',
-      top : 'ArrowUp',
       right : 'ArrowRight',
       bottom : 'ArrowDown'
     }
   };
 
   // Проверяем , какая кнпока нажата и двинаем блок
+  if (e.code === moveTo[controlType].turn) {
+    const blockCopy = MAPSET.block.getNextBlock();
+  
+    if ( canBlockExists ( blockCopy, map )) {
+      MAPSET.block = blockCopy;
+    }
+  }
+
   if (e.code === moveTo[controlType].left) {
     const blockCopy = MAPSET.block.getCopy();
     blockCopy.x = blockCopy.x - 1;
@@ -297,15 +336,6 @@ const moveBlock = function (e, controlType, map) {
   if (e.code === moveTo[controlType].right) {
     const blockCopy = MAPSET.block.getCopy();
     blockCopy.x = blockCopy.x + 1;
-
-    if ( canBlockExists ( blockCopy, map )) {
-      MAPSET.block = blockCopy;
-    }
-  }
-
-  if (e.code === moveTo[controlType].top) {
-    const blockCopy = MAPSET.block.getCopy();
-    blockCopy.y = blockCopy.y - 1;
 
     if ( canBlockExists ( blockCopy, map )) {
       MAPSET.block = blockCopy;
