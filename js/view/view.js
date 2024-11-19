@@ -157,6 +157,27 @@ function getBlock (type, color = 'black', x = 4, y = 0) {
   return block;
 }
 
+const canBlockExists = function (block, map) {
+  const parts = block.getIncludedParts();
+
+  for ( const part of parts) {
+    if (getField(part.x, part.y, map)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const getField = function (x, y, map) {
+ 
+  if (map[y] === undefined || map[y][x] === undefined) {
+    return 'black';
+  }
+
+  return map[y][x];
+}
+
 // Ф-ция непрерывно совершает действия 
 const tick = function (timestamp, map) {
   clearCanvas(); 
@@ -166,8 +187,8 @@ const tick = function (timestamp, map) {
 }
 
 // Ф-ция позволяет перемещать блок, принимает событие и  тип контроллера
-const moveBlock = function (e, controlType) {
-  
+const moveBlock = function (e, controlType, map) {
+
   // Объекты кнопок для разных способов управления
   const moveTo = {
     keyboard : {
@@ -185,24 +206,43 @@ const moveBlock = function (e, controlType) {
     }
   };
 
+  // Проверяем , какая кнпока нажата и двинаем блок
   if (e.code === moveTo[controlType].left) {
-    MAPSET.block.x = MAPSET.block.x - 1;
+    const blockCopy = MAPSET.block.getCopy();
+    blockCopy.x = blockCopy.x - 1;
+
+    if ( canBlockExists ( blockCopy, map )) {
+      MAPSET.block = blockCopy;
+    }
   }
 
   if (e.code === moveTo[controlType].right) {
-    MAPSET.block.x = MAPSET.block.x + 1;
+    const blockCopy = MAPSET.block.getCopy();
+    blockCopy.x = blockCopy.x + 1;
+
+    if ( canBlockExists ( blockCopy, map )) {
+      MAPSET.block = blockCopy;
+    }
   }
 
   if (e.code === moveTo[controlType].top) {
-    MAPSET.block.y = MAPSET.block.y - 1;
+    const blockCopy = MAPSET.block.getCopy();
+    blockCopy.y = blockCopy.y - 1;
+
+    if ( canBlockExists ( blockCopy, map )) {
+      MAPSET.block = blockCopy;
+    }
   }
 
   if (e.code === moveTo[controlType].bottom) {
-    MAPSET.block.y = MAPSET.block.y + 1;
+    const blockCopy = MAPSET.block.getCopy()   
+    blockCopy.y = blockCopy.y + 1;
+    
+    if ( canBlockExists ( blockCopy, map )) {
+      MAPSET.block = blockCopy;
+    };
   }
 }
 
 
-
-
-export { MAPSET, canvas, elements, clearCanvas, drawField, drawBlock, getMap, drawState, setCanvasSize, getBlock, tick, moveBlock  };
+export { MAPSET, canvas, elements, clearCanvas, drawField, drawBlock, getMap, drawState, setCanvasSize, getBlock, tick, moveBlock, getField  };

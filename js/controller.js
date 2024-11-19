@@ -4,10 +4,10 @@ import * as view from './view/view.js';
 // Настройка размеров canvas
 const canvasSize = view.setCanvasSize( {width : view.MAPSET.CANVAS_WIDTH, height : view.MAPSET.CANVAS_HEIGHT} );
 // Функция запускает прослушивание событий
-const startEventListeners = function () {
+const startEventListeners = function (map) {
   view.elements.body.addEventListener('keyup', function (e) {
     // Указываем тип контроллера: keybord или arrows
-    view.moveBlock(e, 'keyboard');
+    view.moveBlock(e, 'keyboard', map);
   });
 }
 
@@ -31,5 +31,5 @@ view.drawState(map);
 start(view.tick, map);
 
 // Слушаем события
-startEventListeners();
+startEventListeners(map);
 
