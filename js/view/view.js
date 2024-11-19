@@ -175,16 +175,10 @@ function getBlock (type, color = 'black', x = 4, y = 0) {
   }
 
   block.getNextBlock = function () {
-    if (block.type === 1) {
-      return getBlock ( 1, block.color, block.x, block.y);
-    }
-
-    if (block.type === 10) {
-      return getBlock ( 11, block.color, block.x, block.y);
-    }
-    if (block.type === 11) {
-      return getBlock ( 10, block.color, block.x, block.y);
-    }
+    const p = n => getBlock(n, block.color, block.x, block.y);
+    if (block.type === 1) { return p(1) }
+    if (block.type === 10) { return p(11) }
+    if (block.type === 11) { return p(10) }
   }
 
   block.getCopy = function () {
