@@ -5,6 +5,7 @@ const MAPSET = {
   ROW_NUMBERS : 20,
   COLUMNS_NUMBERS : 10,
   PADDING : 2,
+  downtime: getDowntime(),
   block : getBlock(1),
   get fieldWidth () {
     return this.CANVAS_WIDTH / this.COLUMNS_NUMBERS; // fieldWidth
@@ -45,6 +46,9 @@ const setCanvasSize = function (size) {
   return size;
 }
 
+function getDowntime () {
+  return 1000;
+}
 
 // Ф-ция очищает поле
 const clearCanvas = function () {
@@ -180,6 +184,16 @@ const getField = function (x, y, map) {
 
 // Ф-ция непрерывно совершает действия 
 const tick = function (timestamp, map) {
+  if (timestamp >= MAPSET. downtime) {
+    const blockCopy = MAPSET.block.getCopy();
+    blockCopy.y = blockCopy.y + 1;
+
+    if (canBlockExists( blockCopy, map ) ) {
+      MAPSET.block = blockCopy;
+    }
+
+    MAPSET.downtime = timestamp + getDowntime();
+  }
   clearCanvas(); 
   drawBlock(); // Рисуем блок
   drawState(map)
