@@ -131,10 +131,10 @@ const getMap = function () {
 }
 
 // Ф-ция превращает блок в структуру поля
-function saveBlock () {
+function saveBlock (map) {
   // Получим части блока
   const parts = MAPSET.block.getIncludedParts();
-  const map = MAPSET.map; 
+  console.log('Saving block:', MAPSET.block.getIncludedParts());
 
   // Обходим все части и записываем координаты и цвет каждой в map
   for ( const part of parts ) {
@@ -181,7 +181,8 @@ const canBlockExists = function (block, map) {
   const parts = block.getIncludedParts();
 
   for ( const part of parts) {
-    if (getField(part.x, part.y, map)) {
+    if (getField(part.x, part.y, map)) {  
+      console.error('Unexpected value "black" in field[19]');    
       return false;
     }
   }
@@ -190,12 +191,42 @@ const canBlockExists = function (block, map) {
 }
 
 const getField = function (x, y, map) {
- 
   if (map[y] === undefined || map[y][x] === undefined) {
     return 'black';
   }
 
   return map[y][x];
+}
+
+const clearLines = function () {
+  let lines = 0;
+
+  const {ROW_NUMBERS, COLUMNS_NUMBERS, map} = MAPSET;
+  for (let y = ROW_NUMBERS - 1; y >= 0; y--) {
+    let isFullLine = true;
+
+    for ( let x = 0; x < COLUMNS_NUMBERS; x++) {
+      if (!getField(x, y, map)) {
+        isFullLine = false;
+        break;
+      }
+    }
+
+    if (isFullLine) {
+      lines = lines + 1;
+      for ( let t = y; t >= 1 ; t--) {
+        for ( let x = 0; x < COLUMNS_NUMBERS; x++) {
+          map[t][x] = map[t - 1][x];
+          map[t - 1][x] = null;
+        }
+      }
+
+      y = y + 1;
+    }
+
+  }
+
+  return lines;
 }
 
 // Ф-ция непрерывно совершает действия 
@@ -204,15 +235,25 @@ const tick = function (timestamp, map) {
   if (timestamp >= MAPSET.downtime) {
     // Созда1м копию и проверяем, можно ли сдвинуть
     const blockCopy = MAPSET.block.getCopy();
+    console.log('block.y:', MAPSET.block.y);
+    console.log('Included parts:', MAPSET.block.getIncludedParts());
     blockCopy.y = blockCopy.y + 1;
-
+   
+    
     // Если сдвинули - увелич время downtime
     if (canBlockExists( blockCopy, map ) ) {
       MAPSET.block = blockCopy;
     } else {
+      console.log('saveblock')
       // в иноч случае блок 'уперся', значит , превращаем его в статич. структуру
-      saveBlock(map);
+      saveBlock(MAPSET.map);
+      console.log(map)
+      const lines = clearLines();
+      console.log(lines);
+      
       MAPSET.block = getBlock(1);
+      console.log(MAPSET.block);
+      
     }
 
     MAPSET.downtime = timestamp + getDowntime();
