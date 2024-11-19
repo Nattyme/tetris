@@ -134,14 +134,14 @@ const getMap = function () {
 function saveBlock (map) {
   // Получим части блока
   const parts = MAPSET.block.getIncludedParts();
-  console.log('Saving block:', MAPSET.block.getIncludedParts());
 
   // Обходим все части и записываем координаты и цвет каждой в map
   for ( const part of parts ) {
-    const x = part.x;
-    const y = part.y;
-    const color = MAPSET.block.color;
-    map[y][x] = color;
+    setField(part.x, part.y, MAPSET.block.color, map)
+    // const x = part.x;
+    // const y = part.y;
+    // const color = MAPSET.block.color;
+    // map[y][x] = color;
   }
 }
 
@@ -153,37 +153,24 @@ function getBlock (type, color = 'black', x = 4, y = 0) {
 
   //
   block.getIncludedParts = function () {
+    // Лямба ф-ция, возвращает объект  с координатами фигуры блока
+    const p = (dx, dy) => ({ x: block.x + dx, y: block.y + dy});
     // Тип фигуры - квадрат
     if (block.type === 1) {
       // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
-      return [
-        { x : block.x, y : block.y },
-        { x : block.x + 1, y : block.y },
-        { x : block.x, y : block.y + 1 },
-        { x : block.x + 1, y : block.y + 1 },
-      ]
+      return [p(0, 0), p(1, 0), p(0, 1), p(1, 1)];
     }
 
     // Тип фигуры - гориз. линия
     if (block.type === 10) {
       // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
-      return [
-        { x : block.x, y : block.y },
-        { x : block.x - 1, y : block.y },
-        { x : block.x + 1, y : block.y },
-        { x : block.x + 2, y : block.y },
-      ]
+      return [p(0, 0), p(-1, 0), p(1, 0), p(2, 0)];
     }
 
     // Тип фигуры - вертик линия
     if (block.type === 11) {
       // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
-      return [
-        { x : block.x, y : block.y },
-        { x : block.x, y : block.y + 1},
-        { x : block.x, y : block.y - 1},
-        { x : block.x, y : block.y - 2},
-      ]
+      return [p(0, 0), p(0, -1), p(0, 1), p(0, 2)]
     }
   }
 
@@ -226,6 +213,14 @@ const getField = function (x, y, map) {
   }
 
   return map[y][x];
+}
+
+const setField = function (x, y, value, map) {
+  if (map[y] === undefined || map[y][x] === undefined) {
+    return;
+  }
+
+  return map[y][x] = value;
 }
 
 const clearLines = function () {
@@ -353,4 +348,4 @@ const moveBlock = function (e, controlType, map) {
 }
 
 
-export { MAPSET, canvas, elements, clearCanvas, drawField, drawBlock, getMap, drawState, setCanvasSize, getBlock, tick, moveBlock, getField  };
+export { MAPSET, canvas, elements, clearCanvas, drawField, drawBlock, getMap, drawState, setCanvasSize, getBlock, tick, moveBlock, getField, setField  };
