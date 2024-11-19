@@ -6,7 +6,7 @@ const MAPSET = {
   COLUMNS_NUMBERS : 10,
   PADDING : 2,
   downtime: getDowntime(),
-  block : getBlock(16),
+  block : getBlock(2),
   get fieldWidth () {
     return this.CANVAS_WIDTH / this.COLUMNS_NUMBERS; // fieldWidth
   },
@@ -159,6 +159,24 @@ function getBlock (type, color = 'black', x = 4, y = 0) {
     if (block.type === 1) {
       // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
       return [p(0, 0), p(1, 0), p(0, 1), p(1, 1)];
+  
+    }
+
+    if (block.type === 2) {
+      // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
+      return [p(0, 0), p(0, -1), p(1, 0), p(-1, 0)];
+    }
+    if (block.type === 3) {
+      // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
+      return [p(0, 0), p(-1, 0), p(1, 0), p(0, 1)];
+    }
+    if (block.type === 4) {
+      // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
+      return [p(0, 0), p(1, 0), p(0, 1), p(0, -1)];
+    }
+    if (block.type === 5) {
+      // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
+      return [p(0, 0), p(-1, 0), p(0, 1), p(0, -1)];
     }
 
     // Тип фигуры - гориз. 'четвёрка'
@@ -167,13 +185,13 @@ function getBlock (type, color = 'black', x = 4, y = 0) {
       return [p(0, 0), p(1, 0), p(0, 1), p(-1, 1)];
     }
     // Тип перев. фигуры - гориз. 'четвёрка'
-    if (block.type === 8) {
+    if (block.type === 7) {
       // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
       return [p(0, 0), p(-1, 0), p(0, 1), p(1, 1)];
     }
 
     // Тип фигуры -верт. 'четвёрка'
-    if (block.type === 7) {
+    if (block.type === 8) {
       // Вернём массив из 4х блоков. Один - всегда статичен, отсальные меняются в зав-ти от типа фигуры
       return [p(0, 0), p(-1, 0), p(-1, -1), p(0, 1)];
     }
@@ -241,11 +259,17 @@ function getBlock (type, color = 'black', x = 4, y = 0) {
     const p = n => getBlock(n, block.color, block.x, block.y);
     if ( block.type === 1 ) { return p(1) }
 
-    if ( block.type === 6 ) { return p(8) }
-    if ( block.type === 8 ) { return p(6) }
+    
+    if ( block.type === 2 ) { return p(3) }
+    if ( block.type === 3 ) { return p(4) }
+    if ( block.type === 4 ) { return p(5) }
+    if ( block.type === 5 ) { return p(2) }
 
-    if ( block.type === 7 ) { return p(9) }
-    if ( block.type === 9 ) { return p(7) }
+    if ( block.type === 6 ) { return p(7) }
+    if ( block.type === 7 ) { return p(6) }
+
+    if ( block.type === 8 ) { return p(9) }
+    if ( block.type === 9 ) { return p(8) }
 
     if ( block.type === 10) { return p(11) }
     if ( block.type === 11) { return p(10) }
